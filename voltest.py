@@ -30,8 +30,8 @@ class AlgoEvent:
             self.positions[instrument] = 0
         self.evt.start()
 
-    def on_bulkdatafeed(self, isSync, bd, ab):
-        current_time = bd['timestamp']
+    def on_marketdatafeed(self, md, ab):
+        current_time = md['timestamp']
         dt_obj = datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S.%f")
         current_date = dt_obj.strftime("%Y/%m/%d")
         current_time = datetime.strptime(current_time, "%Y-%m-%d %H:%M:%S.%f")
@@ -42,9 +42,9 @@ class AlgoEvent:
 
 
         for instrument in self.instruments:
-            if instrument not in bd:
+            if instrument not in md:
                 return
-            self.prices[instrument].append(bd[instrument]['lastPrice'])
+            self.prices[instrument].append(md[instrument]['lastPrice'])
             if len(self.prices[instrument]) >= 2:
                 self.realised_volatility(self.prices[instrument], instrument)
 
@@ -111,7 +111,7 @@ class AlgoEvent:
         )
         self.evt.sendOrder(order)
 
-    def on_marketdatafeed(self, md, ab):
+    def on_bulkdatafeed(self, md, ab):
         pass
 
     def on_orderfeed(self, of):
